@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 18px;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f6f8;
+      color: #202124;
+    }
+
+    .header {
+      margin-bottom: 18px;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+      color: #202124;
+    }
+
+    .header p {
+      margin: 5px 0 0;
+      color: #6b7280;
+      font-size: 13px;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .summary-card {
+      background: white;
+      border: 1px solid #e1e5e9;
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    }
+
+    .summary-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #6b7280;
+      margin-bottom: 5px;
+    }
+
+    .summary-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1a73e8;
+    }
+
+    .overall-card {
+      grid-column: 1 / -1;
+    }
+
+    .overall-card .summary-value {
+      color: #34a853;
+      font-size: 28px;
+    }
+
+    .overall-track {
+      height: 8px;
+      background: #e8eaed;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .overall-bar {
+      height: 100%;
+      width: 0%;
+      background: #34a853;
+      border-radius: 10px;
+      transition: width 0.4s ease;
+    }
+
+    #teams {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .team-card {
+      background: white;
+      border: 1px solid #e1e5e9;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    }
+
+    .team-header {
+      padding: 15px;
+      cursor: pointer;
+    }
+
+    .team-header:hover {
+      background: #fafbfc;
+    }
+
+    .team-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .team-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: #1a73e8;
+      margin-bottom: 4px;
+    }
+
+    .coach-name {
+      font-size: 13px;
+      color: #5f6368;
+    }
+
+    .team-id {
+      font-size: 11px;
+      color: #9aa0a6;
+      margin-top: 3px;
+    }
+
+    .percent {
+      font-size: 16px;
+      font-weight: 700;
+      color: #34a853;
+      white-space: nowrap;
+    }
+
+    .progress-track {
+      height: 7px;
+      background: #e8eaed;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: #34a853;
+      border-radius: 10px;
+      transition: width 0.3s ease;
+    }
+
+    .team-stats {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 12px;
+      color: #6b7280;
+    }
+
+    .player-list {
+      display: none;
+      border-top: 1px solid #e5e7eb;
+      background: #fafbfc;
+      padding: 12px;
+    }
+
+    .player {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 7px;
+    }
+
+    .player:last-child {
+      margin-bottom: 0;
+    }
+
+    .player-name {
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .player-meta {
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 2px;
+    }
+
+    .status {
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .complete {
+      color: #34a853;
+    }
+
+    .missing {
+      color: #ea4335;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 30px;
+      color: #6b7280;
+    }
+
+    .error {
+      background: #fce8e6;
+      color: #c5221f;
+      border: 1px solid #f5c2c0;
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 13px;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 25px;
+      color: #6b7280;
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #e1e5e9;
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+  <div class="header">
+
+    <h1>
+      League Dashboard
+    </h1>
+
+    <p>
+      Player Evaluation System
+    </p>
+
+  </div>
+
+
+  <div id="summary" class="summary">
+
+    <div class="summary-card">
+
+      <div class="summary-label">
+        Teams
+      </div>
+
+      <div
+        id="teamCount"
+        class="summary-value"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <div class="summary-card">
+
+      <div class="summary-label">
+        Evaluated Players
+      </div>
+
+      <div
+        id="evaluationCount"
+        class="summary-value"
+      >
+        —
+      </div>
+
+    </div>
+
+
+    <div class="summary-card overall-card">
+
+      <div class="summary-label">
+        Overall League Completion
+      </div>
+
+      <div
+        id="overallPercent"
+        class="summary-value"
+      >
+        —
+      </div>
+
+      <div class="overall-track">
+
+        <div
+          id="overallBar"
+          class="overall-bar"
+        ></div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div id="teams">
+
+    <div class="loading">
+      Loading teams...
+    </div>
+
+  </div>
+
+
+<script>
+
+function escapeHtml(value) {
+
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
+
+
+function loadDashboard() {
+
+  google.script.run
+
+    .withSuccessHandler(function(data) {
+
+      renderDashboard(data);
+
+    })
+
+    .withFailureHandler(function(error) {
+
+      document.getElementById("teams").innerHTML =
+        '<div class="error">' +
+        '<strong>Dashboard Error</strong><br><br>' +
+        escapeHtml(error.message) +
+        '</div>';
+
+    })
+
+    .getDashboardData();
+
+}
+
+
+function renderDashboard(data) {
+
+  const teams =
+    data.teams || [];
+
+
+  document.getElementById("teamCount")
+    .textContent =
+      data.teamCount || teams.length;
+
+
+  const totalEvaluated =
+    teams.reduce(function(total, team) {
+
+      return total +
+        Number(team.evaluated || 0);
+
+    }, 0);
+
+
+  const totalPlayers =
+    teams.reduce(function(total, team) {
+
+      return total +
+        Number(team.players || 0);
+
+    }, 0);
+
+
+  document.getElementById("evaluationCount")
+    .textContent =
+      totalEvaluated;
+
+
+  const overallPercent =
+    totalPlayers === 0
+      ? 0
+      : (totalEvaluated / totalPlayers) * 100;
+
+
+  document.getElementById("overallPercent")
+    .textContent =
+      overallPercent.toFixed(1) + "%";
+
+
+  document.getElementById("overallBar")
+    .style.width =
+      Math.min(overallPercent, 100) + "%";
+
+
+  const container =
+    document.getElementById("teams");
+
+
+  if (!teams.length) {
+
+    container.innerHTML =
+      '<div class="empty">' +
+      'No teams found.' +
+      '</div>';
+
+    return;
+
+  }
+
+
+  container.innerHTML = "";
+
+
+  teams.forEach(function(team) {
+
+    const card =
+      document.createElement("div");
+
+    card.className =
+      "team-card";
+
+
+    const header =
+      document.createElement("div");
+
+    header.className =
+      "team-header";
+
+
+    const percent =
+      Number(team.percent || 0);
+
+
+    header.innerHTML =
+
+      '<div class="team-top">' +
+
+        '<div>' +
+
+          '<div class="team-name">' +
+            escapeHtml(team.teamName) +
+          '</div>' +
+
+          '<div class="coach-name">' +
+            escapeHtml(team.coachName) +
+          '</div>' +
+
+          '<div class="team-id">' +
+            escapeHtml(team.teamId) +
+          '</div>' +
+
+        '</div>' +
+
+        '<div class="percent">' +
+          percent +
+          '%' +
+        '</div>' +
+
+      '</div>' +
+
+
+      '<div class="progress-track">' +
+
+        '<div ' +
+          'class="progress-bar" ' +
+          'style="width:' +
+          Math.min(percent, 100) +
+          '%">' +
+        '</div>' +
+
+      '</div>' +
+
+
+      '<div class="team-stats">' +
+
+        '<span>' +
+          team.evaluated +
+          ' of ' +
+          team.players +
+          ' evaluated' +
+        '</span>' +
+
+        '<span>' +
+          'View Players ▾' +
+        '</span>' +
+
+      '</div>';
+
+
+    const players =
+      document.createElement("div");
+
+    players.className =
+      "player-list";
+
+
+    header.addEventListener(
+      "click",
+      function() {
+
+        if (
+          players.style.display === "block"
+        ) {
+
+          players.style.display =
+            "none";
+
+          return;
+
+        }
+
+
+        players.style.display =
+          "block";
+
+
+        if (
+          players.dataset.loaded === "true"
+        ) {
+
+          return;
+
+        }
+
+
+        players.innerHTML =
+          '<div class="loading">' +
+          'Loading players...' +
+          '</div>';
+
+
+        google.script.run
+
+          .withSuccessHandler(
+            function(playerData) {
+
+              renderPlayers(
+                players,
+                playerData
+              );
+
+            }
+          )
+
+          .withFailureHandler(
+            function(error) {
+
+              players.innerHTML =
+                '<div class="error">' +
+                escapeHtml(
+                  error.message
+                ) +
+                '</div>';
+
+            }
+          )
+
+          .getTeamPlayers(
+            team.teamId
+          );
+
+      });
+
+
+    card.appendChild(header);
+
+    card.appendChild(players);
+
+    container.appendChild(card);
+
+  });
+
+}
+
+
+function renderPlayers(
+  container,
+  players
+) {
+
+  container.dataset.loaded =
+    "true";
+
+
+  if (
+    !players ||
+    !players.length
+  ) {
+
+    container.innerHTML =
+      '<div class="empty">' +
+      'No players found for this team.' +
+      '</div>';
+
+    return;
+
+  }
+
+
+  container.innerHTML = "";
+
+
+  players.forEach(function(player) {
+
+    const row =
+      document.createElement("div");
+
+    row.className =
+      "player";
+
+
+    const statusClass =
+      player.evaluated
+        ? "complete"
+        : "missing";
+
+
+    const statusText =
+      player.evaluated
+        ? "✓ Evaluated"
+        : "Not Evaluated";
+
+
+    row.innerHTML =
+
+      '<div>' +
+
+        '<div class="player-name">' +
+          escapeHtml(player.name) +
+        '</div>' +
+
+        '<div class="player-meta">' +
+          'Grade: ' +
+          escapeHtml(player.grade) +
+          ' · ' +
+          escapeHtml(player.position) +
+        '</div>' +
+
+      '</div>' +
+
+
+      '<div class="status ' +
+        statusClass +
+      '">' +
+
+        statusText +
+
+      '</div>';
+
+
+    container.appendChild(row);
+
+  });
+
+}
+
+
+loadDashboard();
+
+</script>
+
+
+</body>
+
+</html>
