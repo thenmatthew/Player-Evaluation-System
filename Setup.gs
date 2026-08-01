@@ -151,4 +151,3 @@ function createSheet(ss, name, headers) {
  );
 
 }
-
