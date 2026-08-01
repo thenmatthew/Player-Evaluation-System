@@ -64,4 +64,3 @@ function validateCoachCode(code) {
   };
 
 }
-
