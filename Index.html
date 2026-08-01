@@ -188,8 +188,89 @@ button:hover {
   line-height: 1.5;
 }
 
-.summary-card{border:1px solid #dadce0;border-radius:8px;padding:12px;margin-bottom:12px;background:#fff;}
-.summary-header{display:flex;justify-content:space-between;font-weight:bold;}
+.summary-card{
+    background:#fff;
+    border:1px solid #dadce0;
+    border-radius:12px;
+    padding:18px;
+    margin-bottom:18px;
+    box-shadow:0 2px 6px rgba(0,0,0,.06);
+}
+.summary-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:16px;
+    margin-bottom:12px;
+}
+.summary-player-name{
+    font-size:19px;
+    font-weight:700;
+    color:#202124;
+    line-height:1.2;
+}
+
+.summary-grade{
+    display:inline-block;
+    margin-top:6px;
+    padding:3px 10px;
+    border-radius:999px;
+    background:#e8f0fe;
+    color:#1a73e8;
+    font-size:12px;
+    font-weight:600;
+}
+
+.summary-rating{
+    text-align:right;
+    min-width:70px;
+}
+
+.summary-rating-value{
+    font-size:28px;
+    font-weight:700;
+    color:#1a73e8;
+    line-height:1;
+}
+
+.summary-rating-label{
+    font-size:11px;
+    color:#5f6368;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+}
+
+.summary-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:6px 0;
+    border-bottom:1px solid #f1f3f4;
+}
+
+.summary-row:last-of-type{
+    border-bottom:none;
+}
+
+.summary-row span{
+    color:#5f6368;
+}
+
+.summary-row strong{
+    color:#202124;
+}
+
+.summary-stars{
+
+    color:#f9ab00;
+
+    font-size:18px;
+
+    letter-spacing:1px;
+
+    line-height:1.1;
+
+}
 .summary-complete{color:#188038;}
 .summary-pending{color:#d93025;}
 
@@ -1182,7 +1263,112 @@ stats.textContent =
 progress.style.width =
   data.percentComplete + "%";
  if(!data||!data.players){c.innerHTML="<p>No players found.</p>";return;}
- c.innerHTML=data.players.map(p=>`<div class="summary-card"><div class="summary-header"><span>${escapeHtml(p.playerName)}</span><span class="${p.evaluated?"summary-complete":"summary-pending"}">${p.evaluated?"Complete":"Not Yet Evaluated"}</span></div><div>Overall: ${escapeHtml(p.overall||"-")}</div><div>Fielding: ${escapeHtml(p.fielding||"-")} | Hitting: ${escapeHtml(p.hitting||"-")} | Throwing: ${escapeHtml(p.throwing||"-")}</div><div>Running: ${escapeHtml(p.running||"-")} | Game Concepts: ${escapeHtml(p.gameConcepts||"-")} | Attitude: ${escapeHtml(p.attitude||"-")}</div><div>Position: ${escapeHtml(p.primaryPosition||"-")} | Pitching: ${escapeHtml(p.pitchingAbility||"N/A")} | Catching: ${escapeHtml(p.catchingAbility||"N/A")}</div></div>`).join("");
+c.innerHTML=data.players.map(p=>`
+
+<div class="summary-card">
+
+<div class="summary-header">
+
+    <div>
+
+        <div class="summary-player-name">
+            ${p.evaluated ? "🟢" : "🟡"}
+            ${escapeHtml(p.playerName)}
+        </div>
+
+        <div class="summary-grade">
+            Grade ${escapeHtml(p.grade)}
+        </div>
+
+    </div>
+
+<div class="summary-rating">
+
+    <div class="summary-stars">
+
+        ${createStars(p.overall)}
+
+    </div>
+
+    <div class="summary-rating-value">
+
+        ${p.overall || "-"}/5
+
+    </div>
+
+    <div class="summary-rating-label">
+
+        Overall
+
+    </div>
+
+</div>
+
+</div>
+
+<div>
+<div class="summary-row">
+    <span>Fielding</span>
+    <strong>${escapeHtml(p.fielding||"-")}</strong>
+</div>
+
+<div class="summary-row">
+    <span>Hitting</span>
+    <strong>${escapeHtml(p.hitting||"-")}</strong>
+</div>
+
+<div class="summary-row">
+    <span>Throwing</span>
+    <strong>${escapeHtml(p.throwing||"-")}</strong>
+</div>
+
+<div class="summary-row">
+    <span>Running</span>
+    <strong>${escapeHtml(p.running||"-")}</strong>
+</div>
+
+<div class="summary-row">
+    <span>Game Concepts</span>
+    <strong>${escapeHtml(p.gameConcepts||"-")}</strong>
+</div>
+
+<div class="summary-row">
+    <span>Attitude</span>
+    <strong>${escapeHtml(p.attitude||"-")}</strong>
+</div>
+
+<div class="summary-row">
+    <span>Primary Position</span>
+    <strong>${escapeHtml(p.primaryPosition||"-")}</strong>
+</div>
+
+<div class="summary-row">
+    <span>Pitching</span>
+    <strong>${escapeHtml(p.pitchingAbility||"N/A")}</strong>
+</div>
+
+<div class="summary-row">
+    <span>Catching</span>
+    <strong>${escapeHtml(p.catchingAbility||"N/A")}</strong>
+</div>
+
+</div>
+
+</div>
+
+`).join("");
+}
+function createStars(value){
+
+    const rating = Number(value);
+
+    if(!rating){
+        return "☆☆☆☆☆";
+    }
+
+    return "★★★★★".substring(0,rating) +
+           "☆☆☆☆☆".substring(rating);
+
 }
 
 function escapeHtml(value) {
