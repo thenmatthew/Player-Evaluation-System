@@ -158,11 +158,18 @@ teams[teamId] = {
           ? coach.coachName
           : "Not Assigned",
 
-      players:
-        0,
+  players:
+    0,
 
-      evaluated:
-        0
+  evaluated:
+    0,
+
+  // Analytics Engine
+  totalOverall:
+    0,
+
+  ratedPlayers:
+    0
 
 };
 
@@ -222,6 +229,13 @@ if (
 
   team.evaluated++;
 
+if (!isNaN(overall) && overall > 0) {
+
+  team.totalOverall += overall;
+  team.ratedPlayers++;
+
+}
+
   const division =
     team.division;
 
@@ -263,17 +277,29 @@ if (
 
 
       team.percent =
-        team.players === 0
-          ? 0
-          : Math.round(
-              (
-                team.evaluated /
-                team.players
-              ) * 100
-            );
+  team.players === 0
+    ? 0
+    : Math.round(
+        (
+          team.evaluated /
+          team.players
+        ) * 100
+      );
 
+team.averageRating =
+  team.ratedPlayers === 0
+    ? 0
+    : Number(
+        (
+          team.totalOverall /
+          team.ratedPlayers
+        ).toFixed(2)
+      );
 
-      teamList.push(team);
+delete team.totalOverall;
+delete team.ratedPlayers;
+
+teamList.push(team);
 
     });
 
@@ -365,6 +391,29 @@ const completionPercent =
 
 
 // ------------------------------------------
+// TEAM COMPLETION
+// ------------------------------------------
+
+const completedTeams =
+  teamList.reduce(function(total, team) {
+
+    return total +
+      (team.percent === 100 ? 1 : 0);
+
+  }, 0);
+
+const teamCompletionPercent =
+  teamList.length === 0
+    ? 0
+    : Number(
+        (
+          completedTeams /
+          teamList.length *
+          100
+        ).toFixed(1)
+      );
+      
+// ------------------------------------------
 // BUILD DIVISION ANALYTICS
 // ------------------------------------------
 
@@ -421,11 +470,11 @@ DIVISION_ORDER.forEach(function(name) {
         );
 
 division.averageRating =
-  analytics && analytics.count > 0
+  division.ratedPlayers > 0
     ? Number(
         (
-          analytics.total /
-          analytics.count
+          division.totalOverall /
+          division.ratedPlayers
         ).toFixed(2)
       )
     : 0;
@@ -435,24 +484,30 @@ division.averageRating =
 
 return {
 
-  analytics: {
+analytics: {
 
-    teams:
-      teamList.length,
+  teams:
+    teamList.length,
 
-    totalPlayers:
-      totalPlayers,
+  completedTeams:
+    completedTeams,
 
-    evaluatedPlayers:
-      evaluatedPlayers,
+  teamCompletionPercent:
+    teamCompletionPercent,
 
-    completionPercent:
-      completionPercent,
+  totalPlayers:
+    totalPlayers,
 
-leagueAverage:
-      leagueAverage
+  evaluatedPlayers:
+    evaluatedPlayers,
 
-  },
+  completionPercent:
+    completionPercent,
+
+  leagueAverage:
+    leagueAverage
+
+},
 
   divisions:
     divisions,
