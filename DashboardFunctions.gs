@@ -173,6 +173,28 @@ teams[teamId] = {
 
 }
 
+// ==========================================
+// ANALYTICS ENGINE
+//
+// All dashboard metrics are calculated here.
+// The UI only displays the returned values.
+// ==========================================
+
+// ------------------------------------------
+// LEAGUE ANALYTICS
+// ------------------------------------------
+
+// ------------------------------------------
+// DIVISION ANALYTICS
+// ------------------------------------------
+
+const divisionAnalytics = {};
+
+// ------------------------------------------
+// TEAM ANALYTICS
+// ------------------------------------------
+
+// Story 5
 
   // ------------------------------------------
   // COUNT EVALUATIONS
@@ -188,18 +210,43 @@ teams[teamId] = {
       String(evaluations[i][3])
         .trim();
 
+const overall =
+  Number(evaluations[i][13]);
 
-    if (
-      teams[evaluationTeamId]
-    ) {
+if (
+  teams[evaluationTeamId]
+) {
 
-      teams[evaluationTeamId]
-        .evaluated++;
+  const team =
+    teams[evaluationTeamId];
 
-    }
+  team.evaluated++;
+
+  const division =
+    team.division;
+
+  if (!divisionAnalytics[division]) {
+
+    divisionAnalytics[division] = {
+      total: 0,
+      count: 0
+    };
 
   }
 
+  if (!isNaN(overall) && overall > 0) {
+
+    divisionAnalytics[division]
+      .total += overall;
+
+    divisionAnalytics[division]
+      .count++;
+
+  }
+
+}
+
+}   // <-- closes the for loop
 
   // ------------------------------------------
   // BUILD FINAL TEAM LIST
@@ -259,28 +306,6 @@ teamList.sort(function(a, b) {
 });
 
 
-// ==========================================
-// ANALYTICS ENGINE
-//
-// All dashboard metrics are calculated here.
-// The UI only displays the returned values.
-// ==========================================
-
-// ------------------------------------------
-// LEAGUE ANALYTICS
-// ------------------------------------------
-
-// ------------------------------------------
-// DIVISION ANALYTICS
-// ------------------------------------------
-
-const divisionAnalytics = {};
-
-// ------------------------------------------
-// TEAM ANALYTICS
-// ------------------------------------------
-
-// Story 5
 
 // ------------------------------------------
 // CALCULATE LEAGUE AVERAGE
@@ -377,6 +402,9 @@ DIVISION_ORDER.forEach(function(name) {
 
   const division = divisionMap[name];
 
+  const analytics =
+  divisionAnalytics[name];
+
   if (!division) {
     return;
   }
@@ -392,6 +420,15 @@ DIVISION_ORDER.forEach(function(name) {
           ).toFixed(1)
         );
 
+division.averageRating =
+  analytics && analytics.count > 0
+    ? Number(
+        (
+          analytics.total /
+          analytics.count
+        ).toFixed(2)
+      )
+    : 0;
   divisions.push(division);
 
 });
