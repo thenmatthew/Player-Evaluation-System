@@ -192,6 +192,18 @@
       transition: width 0.3s ease;
     }
 
+.team-status {
+
+  margin-top: 10px;
+  margin-bottom: 8px;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  color: #5f6368;
+
+}
+
     .team-stats {
       display: flex;
       justify-content: space-between;
@@ -591,7 +603,11 @@ container.appendChild(
       '</div>' +
 
 
- '<div class="team-stats">' +
+'<div class="team-status">' +
+  escapeHtml(team.averageStatus) +
+'</div>' +
+
+'<div class="team-stats">' +
 
   '<span>' +
     'Average: ' +
