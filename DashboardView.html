@@ -34,59 +34,78 @@
       font-size: 13px;
     }
 
-    .summary {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 18px;
-    }
+.summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
 
-    .summary-card {
-      background: white;
-      border: 1px solid #e1e5e9;
-      border-radius: 12px;
-      padding: 14px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-    }
+.analytics-panel {
 
-    .summary-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #6b7280;
-      margin-bottom: 5px;
-    }
+  background: white;
+  border: 1px solid #e1e5e9;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 18px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
 
-    .summary-value {
-      font-size: 24px;
-      font-weight: 700;
-      color: #1a73e8;
-    }
+}
 
-    .overall-card {
-      grid-column: 1 / -1;
-    }
+.analytics-title {
 
-    .overall-card .summary-value {
-      color: #34a853;
-      font-size: 28px;
-    }
+  font-size: 15px;
+  font-weight: 700;
+  color: #202124;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eceff1;
 
-    .overall-track {
-      height: 8px;
-      background: #e8eaed;
-      border-radius: 10px;
-      overflow: hidden;
-      margin-top: 10px;
-    }
+}
 
-    .overall-bar {
-      height: 100%;
-      width: 0%;
-      background: #34a853;
-      border-radius: 10px;
-      transition: width 0.4s ease;
-    }
+.analytics-row {
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+
+}
+
+.analytics-label {
+
+  color: #5f6368;
+  font-size: 13px;
+
+}
+
+.analytics-value {
+
+  font-weight: 700;
+  font-size: 15px;
+  color: #1a73e8;
+
+}
+
+.overall-track {
+
+  margin-top: 12px;
+  height: 8px;
+  background: #e8eaed;
+  border-radius: 10px;
+  overflow: hidden;
+
+}
+
+.overall-bar {
+
+  height: 100%;
+  width: 0%;
+  background: #34a853;
+  border-radius: 10px;
+  transition: width .3s ease;
+
+}
 
     #teams {
       display: flex;
@@ -258,66 +277,42 @@
   </div>
 
 
-  <div id="summary" class="summary">
+<div class="analytics-panel">
 
-    <div class="summary-card">
+  <div class="analytics-title">
+    League Analytics
+  </div>
 
-      <div class="summary-label">
-        Teams
-      </div>
+  <div class="analytics-row">
+    <span class="analytics-label">Teams</span>
+    <span id="teamCount" class="analytics-value">—</span>
+  </div>
 
-      <div
-        id="teamCount"
-        class="summary-value"
-      >
-        —
-      </div>
+  <div class="analytics-row">
+    <span class="analytics-label">Evaluated</span>
+    <span id="evaluationCount" class="analytics-value">—</span>
+  </div>
 
-    </div>
+  <div class="analytics-row">
+  <span class="analytics-label">League Average</span>
+    <span id="leagueAverage" class="analytics-value">—</span>
+  </div>
 
+  <div class="analytics-row">
+    <span class="analytics-label">Completion</span>
+    <span id="overallPercent" class="analytics-value">—</span>
+  </div>
 
-    <div class="summary-card">
+  <div class="overall-track">
 
-      <div class="summary-label">
-        Evaluated Players
-      </div>
-
-      <div
-        id="evaluationCount"
-        class="summary-value"
-      >
-        —
-      </div>
-
-    </div>
-
-
-    <div class="summary-card overall-card">
-
-      <div class="summary-label">
-        Overall League Completion
-      </div>
-
-      <div
-        id="overallPercent"
-        class="summary-value"
-      >
-        —
-      </div>
-
-      <div class="overall-track">
-
-        <div
-          id="overallBar"
-          class="overall-bar"
-        ></div>
-
-      </div>
-
-    </div>
+    <div
+      id="overallBar"
+      class="overall-bar"
+    ></div>
 
   </div>
 
+</div>
 
   <div id="teams">
 
@@ -372,49 +367,38 @@ function renderDashboard(data) {
   const teams =
     data.teams || [];
 
+const analytics =
+  data.analytics || {};
 
-  document.getElementById("teamCount")
-    .textContent =
-      data.teamCount || teams.length;
-
-
-  const totalEvaluated =
-    teams.reduce(function(total, team) {
-
-      return total +
-        Number(team.evaluated || 0);
-
-    }, 0);
+document.getElementById("teamCount")
+  .textContent =
+    analytics.teams || teams.length;
 
 
-  const totalPlayers =
-    teams.reduce(function(total, team) {
-
-      return total +
-        Number(team.players || 0);
-
-    }, 0);
+document.getElementById("evaluationCount")
+  .textContent =
+    (analytics.evaluatedPlayers || 0) +
+    " / " +
+    (analytics.totalPlayers || 0);
 
 
-  document.getElementById("evaluationCount")
-    .textContent =
-      totalEvaluated;
+document.getElementById("leagueAverage")
+  .textContent =
+    Number(
+      analytics.leagueAverage || 0
+    ).toFixed(2);
+
+document.getElementById("overallPercent")
+  .textContent =
+    (analytics.completionPercent || 0) + "%";
 
 
-  const overallPercent =
-    totalPlayers === 0
-      ? 0
-      : (totalEvaluated / totalPlayers) * 100;
-
-
-  document.getElementById("overallPercent")
-    .textContent =
-      overallPercent.toFixed(1) + "%";
-
-
-  document.getElementById("overallBar")
-    .style.width =
-      Math.min(overallPercent, 100) + "%";
+document.getElementById("overallBar")
+  .style.width =
+    Math.min(
+      analytics.completionPercent || 0,
+      100
+    ) + "%";
 
 
   const container =
