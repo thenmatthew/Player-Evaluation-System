@@ -296,6 +296,9 @@ team.averageRating =
         ).toFixed(2)
       );
 
+team.averageStatus =
+  "At Division Average";
+
 delete team.totalOverall;
 delete team.ratedPlayers;
 
@@ -479,6 +482,53 @@ division.averageRating =
       )
     : 0;
   divisions.push(division);
+
+});
+
+// ------------------------------------------
+// TEAM VS DIVISION STATUS
+// ------------------------------------------
+
+teamList.forEach(function(team) {
+
+  const division =
+    divisions.find(function(d) {
+
+      return d.name === team.division;
+
+    });
+
+  if (!division) {
+
+    team.averageStatus =
+      "▬ At Division Average";
+
+    return;
+
+  }
+
+  const difference =
+    Number(team.averageRating || 0) -
+    Number(division.averageRating || 0);
+
+  if (difference > 0.10) {
+
+    team.averageStatus =
+      "▲ Above Division Average";
+
+  }
+  else if (difference < -0.10) {
+
+    team.averageStatus =
+      "▼ Below Division Average";
+
+  }
+  else {
+
+    team.averageStatus =
+      "▬ At Division Average";
+
+  }
 
 });
 
