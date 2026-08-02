@@ -120,6 +120,13 @@
       color: #202124;
     }
 
+.division-summary {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #5f6368;
+  font-weight: 500;
+}
+
     #teams {
       display: flex;
       flex-direction: column;
@@ -377,6 +384,9 @@ function renderDashboard(data) {
 const analytics =
   data.analytics || {};
 
+const divisions =
+  data.divisions || [];
+
 document.getElementById("teamCount")
   .textContent =
     analytics.teams || teams.length;
@@ -434,20 +444,48 @@ document.getElementById("overallBar")
 
       currentDivision = team.division;
 
-      const divisionHeader =
-        document.createElement("div");
+const division =
+  divisions.find(function(d) {
+    return d.name === currentDivision;
+  });
 
-      divisionHeader.className =
-        "division-header";
+const divisionHeader =
+  document.createElement("div");
 
-      divisionHeader.innerHTML =
-        '<h2 class="division-title">' +
-        escapeHtml(currentDivision) +
-        '</h2>';
+divisionHeader.className =
+  "division-header";
 
-      container.appendChild(
-        divisionHeader
-      );
+divisionHeader.innerHTML =
+
+  '<div class="division-title">' +
+    escapeHtml(currentDivision) +
+  '</div>' +
+
+  '<div class="division-summary">' +
+
+    (division
+      ? 'Teams: ' +
+        division.teamCount +
+        ' • Players: ' +
+        division.totalPlayers
+      : '') +
+
+  '</div>' +
+
+  '<div class="division-summary">' +
+
+    (division
+      ? 'Complete: ' +
+        division.completionPercent +
+        '% • Average: ' +
+        Number(division.averageRating || 0).toFixed(2)
+      : '') +
+
+  '</div>';
+
+container.appendChild(
+  divisionHeader
+);
 
     }
 
