@@ -60,6 +60,16 @@ function getDashboardData() {
 
 const teams = {};
 
+const DIVISION_ORDER = [
+  "CP M/W",
+  "CP T/R",
+  "MP M/W",
+  "MP T/R",
+  "3rd/4th M/W",
+  "5th/6th",
+  "7th/8th/9th",
+  "Senior High"
+];
 
 // ------------------------------------------
 // BUILD COACH LOOKUP
@@ -83,13 +93,18 @@ for (let c = 1; c < coaches.length; c++) {
     continue;
   }
 
-  coachMap[coachTeamId] = {
+coachMap[coachTeamId] = {
+
+    division:
+      String(coaches[c][0]).trim(),
+
     coachName:
       String(coaches[c][1]).trim(),
 
     teamName:
       String(coaches[c][3]).trim()
-  };
+
+};
 
 }
 
@@ -117,7 +132,12 @@ for (let i = 1; i < players.length; i++) {
       coachMap[playerTeamId];
 
 
-    teams[teamId] = {
+teams[teamId] = {
+
+      division:
+        coach
+          ? coach.division
+          : "Unknown",
 
       teamId:
         teamId,
@@ -138,7 +158,7 @@ for (let i = 1; i < players.length; i++) {
       evaluated:
         0
 
-    };
+};
 
   }
 
@@ -205,12 +225,30 @@ for (let i = 1; i < players.length; i++) {
     });
 
 
-  // Sort alphabetically by team name
+teamList.sort(function(a, b) {
 
- teamList.sort(function(a, b) {
+  const divisionA =
+    DIVISION_ORDER.indexOf(a.division);
 
-  return a.teamName
-    .localeCompare(b.teamName);
+  const divisionB =
+    DIVISION_ORDER.indexOf(b.division);
+
+  // Unknown divisions sort to the end
+  const orderA =
+    divisionA === -1
+      ? Number.MAX_SAFE_INTEGER
+      : divisionA;
+
+  const orderB =
+    divisionB === -1
+      ? Number.MAX_SAFE_INTEGER
+      : divisionB;
+
+  if (orderA !== orderB) {
+    return orderA - orderB;
+  }
+
+  return a.teamName.localeCompare(b.teamName);
 
 });
 
