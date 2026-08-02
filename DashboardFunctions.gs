@@ -215,10 +215,90 @@ for (let i = 1; i < players.length; i++) {
 });
 
 
+// ------------------------------------------
+// BUILD LEAGUE ANALYTICS
+// ------------------------------------------
+
+// ------------------------------------------
+// CALCULATE LEAGUE AVERAGE
+// ------------------------------------------
+
+let totalOverall = 0;
+let ratedPlayers = 0;
+
+for (let i = 1; i < evaluations.length; i++) {
+
+  const overall =
+    Number(evaluations[i][13]);
+
+  if (!isNaN(overall) && overall > 0) {
+
+    totalOverall += overall;
+    ratedPlayers++;
+
+  }
+
+}
+
+const leagueAverage =
+  ratedPlayers === 0
+    ? 0
+    : Number(
+        (totalOverall / ratedPlayers)
+          .toFixed(2)
+      );
+const totalPlayers =
+  teamList.reduce(function(total, team) {
+
+    return total + team.players;
+
+  }, 0);
+
+
+const evaluatedPlayers =
+  teamList.reduce(function(total, team) {
+
+    return total + team.evaluated;
+
+  }, 0);
+
+
+const completionPercent =
+  totalPlayers === 0
+    ? 0
+    : Number(
+        (
+          evaluatedPlayers /
+          totalPlayers *
+          100
+        ).toFixed(1)
+      );
+
+
 return {
-  TEST_MARKER: "SERVER RETURN TEST 999",
-  teamCount: teamList.length,
-  teams: teamList
+
+  analytics: {
+
+    teams:
+      teamList.length,
+
+    totalPlayers:
+      totalPlayers,
+
+    evaluatedPlayers:
+      evaluatedPlayers,
+
+    completionPercent:
+      completionPercent,
+
+leagueAverage:
+      leagueAverage
+
+  },
+
+  teams:
+    teamList
+
 };
 
 }
