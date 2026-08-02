@@ -472,15 +472,19 @@ DIVISION_ORDER.forEach(function(name) {
           ).toFixed(1)
         );
 
+const divisionStats =
+  divisionAnalytics[name];
+
 division.averageRating =
-  division.ratedPlayers > 0
+  divisionStats && divisionStats.count > 0
     ? Number(
         (
-          division.totalOverall /
-          division.ratedPlayers
+          divisionStats.total /
+          divisionStats.count
         ).toFixed(2)
       )
     : 0;
+
   divisions.push(division);
 
 });
