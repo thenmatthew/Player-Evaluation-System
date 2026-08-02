@@ -107,6 +107,19 @@
 
 }
 
+    .division-header {
+      margin: 18px 0 6px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #dfe3e8;
+    }
+
+    .division-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      color: #202124;
+    }
+
     #teams {
       display: flex;
       flex-direction: column;
@@ -147,12 +160,6 @@
     .coach-name {
       font-size: 13px;
       color: #5f6368;
-    }
-
-    .team-id {
-      font-size: 11px;
-      color: #9aa0a6;
-      margin-top: 3px;
     }
 
     .percent {
@@ -419,8 +426,30 @@ document.getElementById("overallBar")
 
   container.innerHTML = "";
 
+  let currentDivision = "";
 
   teams.forEach(function(team) {
+
+    if (team.division !== currentDivision) {
+
+      currentDivision = team.division;
+
+      const divisionHeader =
+        document.createElement("div");
+
+      divisionHeader.className =
+        "division-header";
+
+      divisionHeader.innerHTML =
+        '<h2 class="division-title">' +
+        escapeHtml(currentDivision) +
+        '</h2>';
+
+      container.appendChild(
+        divisionHeader
+      );
+
+    }
 
     const card =
       document.createElement("div");
@@ -450,13 +479,10 @@ document.getElementById("overallBar")
             escapeHtml(team.teamName) +
           '</div>' +
 
-          '<div class="coach-name">' +
-            escapeHtml(team.coachName) +
-          '</div>' +
-
-          '<div class="team-id">' +
-            escapeHtml(team.teamId) +
-          '</div>' +
+'<div class="coach-name">' +
+  'Coach: ' +
+  escapeHtml(team.coachName) +
+'</div>' +
 
         '</div>' +
 
