@@ -41,6 +41,7 @@
   margin-bottom: 20px;
 }
 
+
 .analytics-panel {
 
   background: white;
@@ -291,40 +292,69 @@
   </div>
 
 
-<div class="analytics-panel">
+<div class="analytics-container">
 
-  <div class="analytics-title">
-    League Analytics
-  </div>
+  <div class="analytics-panel">
 
-  <div class="analytics-row">
-    <span class="analytics-label">Teams</span>
-    <span id="teamCount" class="analytics-value">—</span>
-  </div>
+    <div class="analytics-title">
+      League Analytics
+    </div>
 
-  <div class="analytics-row">
-    <span class="analytics-label">Evaluated</span>
-    <span id="evaluationCount" class="analytics-value">—</span>
-  </div>
+    <div class="analytics-row">
+      <span class="analytics-label">Teams:</span>
+      <span id="teamCount" class="analytics-value">—</span>
+    </div>
 
-  <div class="analytics-row">
-  <span class="analytics-label">League Average</span>
-    <span id="leagueAverage" class="analytics-value">—</span>
-  </div>
+    <div class="analytics-row">
+      <span class="analytics-label">Teams Complete:</span>
+      <span id="completedTeams" class="analytics-value">—</span>
+    </div>
 
-  <div class="analytics-row">
-    <span class="analytics-label">Completion</span>
-    <span id="overallPercent" class="analytics-value">—</span>
-  </div>
+    <div class="analytics-row">
+      <span class="analytics-label">Complete:</span>
+      <span id="teamCompletion" class="analytics-value">—</span>
+    </div>
 
-  <div class="overall-track">
-
-    <div
-      id="overallBar"
-      class="overall-bar"
-    ></div>
+    <div class="overall-track">
+      <div
+        id="teamCompletionBar"
+        class="overall-bar"
+      ></div>
+    </div>
 
   </div>
+
+  <div class="analytics-panel">
+
+    <div class="analytics-title">
+      Player Analytics
+    </div>
+
+    <div class="analytics-row">
+      <span class="analytics-label">Evaluated:</span>
+      <span id="evaluationCount" class="analytics-value">—</span>
+    </div>
+
+    <div class="analytics-row">
+      <span class="analytics-label">Complete:</span>
+      <span id="overallPercent" class="analytics-value">—</span>
+    </div>
+
+    <div class="analytics-row">
+      <span class="analytics-label">League Average:</span>
+      <span id="leagueAverage" class="analytics-value">—</span>
+    </div>
+
+    <div class="overall-track">
+      <div
+        id="overallBar"
+        class="overall-bar"
+      ></div>
+    </div>
+
+  </div>
+
+</div>
 
 </div>
 
@@ -391,6 +421,22 @@ document.getElementById("teamCount")
   .textContent =
     analytics.teams || teams.length;
 
+document.getElementById("completedTeams")
+  .textContent =
+    (analytics.completedTeams || 0) +
+    " / " +
+    (analytics.teams || teams.length);
+
+document.getElementById("teamCompletion")
+  .textContent =
+    (analytics.teamCompletionPercent || 0) + "%";
+
+document.getElementById("teamCompletionBar")
+  .style.width =
+    Math.min(
+      analytics.teamCompletionPercent || 0,
+      100
+    ) + "%";
 
 document.getElementById("evaluationCount")
   .textContent =
@@ -481,6 +527,7 @@ divisionHeader.innerHTML =
         Number(division.averageRating || 0).toFixed(2)
       : '') +
 
+
   '</div>';
 
 container.appendChild(
@@ -544,20 +591,18 @@ container.appendChild(
       '</div>' +
 
 
-      '<div class="team-stats">' +
+ '<div class="team-stats">' +
 
-        '<span>' +
-          team.evaluated +
-          ' of ' +
-          team.players +
-          ' evaluated' +
-        '</span>' +
+  '<span>' +
+    'Average: ' +
+    Number(team.averageRating || 0).toFixed(2) +
+  '</span>' +
 
-        '<span>' +
-          'View Players ▾' +
-        '</span>' +
+  '<span>' +
+    'View Players ▾' +
+  '</span>' +
 
-      '</div>';
+'</div>';
 
 
     const players =
