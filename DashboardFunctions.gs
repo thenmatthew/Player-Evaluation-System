@@ -108,6 +108,12 @@ coachMap[coachTeamId] = {
 
 }
 
+// ------------------------------------------
+// PLAYER LOOKUP
+// ------------------------------------------
+
+const playerLookup = {};
+
 
 // ------------------------------------------
 // BUILD TEAMS FROM PLAYERS
@@ -253,9 +259,28 @@ teamList.sort(function(a, b) {
 });
 
 
+// ==========================================
+// ANALYTICS ENGINE
+//
+// All dashboard metrics are calculated here.
+// The UI only displays the returned values.
+// ==========================================
+
 // ------------------------------------------
-// BUILD LEAGUE ANALYTICS
+// LEAGUE ANALYTICS
 // ------------------------------------------
+
+// ------------------------------------------
+// DIVISION ANALYTICS
+// ------------------------------------------
+
+const divisionAnalytics = {};
+
+// ------------------------------------------
+// TEAM ANALYTICS
+// ------------------------------------------
+
+// Story 5
 
 // ------------------------------------------
 // CALCULATE LEAGUE AVERAGE
@@ -313,6 +338,64 @@ const completionPercent =
       );
 
 
+
+// ------------------------------------------
+// BUILD DIVISION ANALYTICS
+// ------------------------------------------
+
+const divisionMap = {};
+
+teamList.forEach(function(team) {
+
+if (!divisionMap[team.division]) {
+
+  divisionMap[team.division] = {
+    name: team.division,
+    teamCount: 0,
+    totalPlayers: 0,
+    evaluatedPlayers: 0,
+    completionPercent: 0,
+
+    // Internal accumulators
+    totalOverall: 0,
+    ratedPlayers: 0
+  };
+
+}
+
+  const division = divisionMap[team.division];
+
+  division.teamCount++;
+  division.totalPlayers += team.players;
+  division.evaluatedPlayers += team.evaluated;
+
+});
+
+const divisions = [];
+
+DIVISION_ORDER.forEach(function(name) {
+
+  const division = divisionMap[name];
+
+  if (!division) {
+    return;
+  }
+
+  division.completionPercent =
+    division.totalPlayers === 0
+      ? 0
+      : Number(
+          (
+            division.evaluatedPlayers /
+            division.totalPlayers *
+            100
+          ).toFixed(1)
+        );
+
+  divisions.push(division);
+
+});
+
 return {
 
   analytics: {
@@ -333,6 +416,9 @@ leagueAverage:
       leagueAverage
 
   },
+
+  divisions:
+    divisions,
 
   teams:
     teamList
@@ -400,21 +486,24 @@ function getTeamPlayers(teamId) {
 
     if (playerId) {
 
-      evaluatedPlayers[playerId] = {
+evaluatedPlayers[playerId] = {
 
-        playerName:
-          evaluations[i][6],
+  playerName:
+    evaluations[i][6],
 
-        position:
-          evaluations[i][15],
+  overall:
+    Number(evaluations[i][13]),
 
-        pitching:
-          evaluations[i][16],
+  position:
+    evaluations[i][15],
 
-        catching:
-          evaluations[i][17]
+  pitching:
+    evaluations[i][16],
 
-      };
+  catching:
+    evaluations[i][17]
+
+};
 
     }
 
